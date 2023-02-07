@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户中心</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_3714425_wp3ml2w1luc.css">
+    <link rel="stylesheet" href="./css/suning-login.css">
+    <script src="./libs/axios.js"></script>
+</head>
+
+<body>
+    <div class="register-container">
+        <div class="register-wrap">
+            <div class="register-content">
+                <div class="title">用户中心</div>
+                <div class="input-content">
+                    <div class="username">
+                        <i class="iconfont icon-yonghuming"></i>
+                        <!-- 用户名输入框 -->
+                        <input id="username" readonly="true" autocomplete="off" type="text" placeholder="请输入用户名">
+                    </div>
+                    <div class="nickname">
+                        <i class="iconfont icon-mima"></i>
+                        <!-- 昵称 -->
+                        <input id="nickname" type="text" autocomplete="off" placeholder="用户昵称">
+                    </div>
+                    <div class="age">
+                        <i class="iconfont icon-mima"></i>
+                        <!-- 用户年龄 -->
+                        <input id="age" type="text" autocomplete="off" placeholder="用户年龄">
+                    </div>
+                    <div class="gender">
+                        <i class="iconfont icon-mima"></i>
+                        <!-- 用户性别 -->
+                        <input id="gender" type="text" autocomplete="off" placeholder="用户性别">
+                    </div>
+                    <div class="id">
+                        <i class="iconfont icon-mima"></i>
+                        <!-- 用户id : 只能看不能修改 -->
+                        <input id="id" type="text" readonly="true" autocomplete="off" placeholder="用户id">
+                    </div>
+                    <div class="identity">
+                        <i class="iconfont icon-mima"></i>
+                        <!-- 用户身份 -->
+                        <input id="identity" readonly="true" type="text" autocomplete="off" placeholder="用户身份">
+                    </div>
+
+                    <div class="updateTime">
+                        <i class="iconfont icon-mima"></i>
+                        <!-- 更新时间 -->
+                        <input id="updateTime" readonly="true" type="text" autocomplete="off" placeholder="更新时间">
+                    </div>
+
+                </div>
+                <!-- 修改用户数据 -->
+                <button id="update">修改用户数据</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        async function init() {
+            // 判定是否存在token信息; 
+            let user = hasLogin()
+            // 获取用户对应的信息,然后进行页面渲染; 我们在发送请求的时候需要通过请求头的 authorization 字段携带token信息;
+            let options = {
+                headers : {
+                    "authorization" : user.token
+                }
+            }
+            let { data } = await axios("http://localhost:8888/users/info/" + user.id , options );
+            renderUserCenter( data.info )
+        }
+        function renderUserCenter() {
+            let id = location.hash.slice(1);
+        }
+        function hasLogin() {
+            let token = localStorage.getItem("token");
+            // 如果存在token信息 , 我们就跳转回登录功能! 
+            let id = location.hash.slice(1);
+            if (!token) {
+                alert('请在登录后在查看登录信息')
+                location.href = "登录.html"
+            }
+            return {
+                id , 
+                token
+            };
+        }
+        function $( select ){
+            return document.querySelector( select );
+        }
+        function renderUserCenter( info ){
+            // 我们通过info对象之中的数据渲染页面! 
+            console.log( info );
+            let { username , age , gender , id , identity , nickname , updateTime } = info;
+            // 把数据放入到对应的dom对象; 
+            $("#username").value = username;
+            $("#age").value = age;
+            $("#gender").value = gender;
+            $("#id").value = "用户id:" + id;
+            $("#identity").value = identity;
+            $("#nickname").value = nickname;
+            // 注意 : 时间戳要创建成更新日期; 
+            let d = new Date();
+            d.setTime(updateTime);
+
+            $("#updateTime").value = "修改时间:" + d.toLocaleDateString();
+        }
+        window.addEventListener("load",init)
+        
+    </script>
+</body>
+
+</html>

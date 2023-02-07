@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苏宁易购</title>
+    <link rel="stylesheet" href="css/pager.css">
+    <link rel="stylesheet" href="css/pagination.css">
+    <link rel="stylesheet" href="css/suning.css">
+    <script src="libs/axios.js"></script>
+    <script src="./libs/pager.js"></script>
+</head>
+
+<body>
+    <!-- 商品列表位置控制容器-->
+    <div class="goods-container">
+        <div class="options-content">
+            <!-- 显示页面数量的控制工具 -->
+            <select id="pagesize-select">
+                <option value="10">显示十条</option>
+                <option value="20">显示二十条</option>
+                <option value="30">显示三十条</option>
+                <option value="40">显示四十条</option>
+            </select>
+            <!-- 搜索部分结构 -->
+            <input type="text" id="search"><button id="search-btn">搜索</button>
+            <!-- 折扣范围 -->
+            <select id="saletype-select">
+                <option value="10">10</option>
+                <option value="9">9</option>
+                <option value="8">8</option>
+                <option value="7">7</option>
+                <option value="6">6</option>
+                <option value="5">5</option>
+            </select>
+             <!-- 排序类别  -->
+             <select  id="sortType-select">
+                <option value="id">根据id排序</option>
+                <option value="price">根据价格排序</option>
+                <option value="sale">根据折扣类型排序</option>
+            </select>
+            <!-- 排序正负 -->
+            <select  id="sortMethod-select">
+                <option value="ASC">正序排列</option>
+                <option value="DESC">倒序排列</option>
+            </select>
+            <!-- 商品分类选项 -->
+            <select id="category-select">
+                <option value=""> loading... </option>
+            </select>
+        </div>
+        <!-- 推荐图片 -->
+        <img src="./images/tuijian.png" alt="">
+        <!-- 商品列表容器 -->
+        <div class="goods-content">
+            <!-- 商品列表 -->
+        </div>
+        <div class="pagination"></div>
+    </div>
+    <script>
+        // 分析 为了方便函数对配置对象的访问 我们吧配置对象放在全局里面
+        let options = {
+            params: {
+                // 一次显示的图片数量
+                pagesize: 10,
+                // 当前显示的页码
+                current: 1,
+                // 当前的搜索参数
+                search: "",
+                // 折扣类别
+                saleType: 10 
+            }
+        };
+        // 注意 01_页面初始化 先加载数据然后再根据数据渲染页面
+        async function init() {
+            let { data } = await axios("http://localhost:8888/goods/list", options)
+            renderGoods(data.list)
+            // 注意 04_分页插件
+            // 开关变量控制第一次callback不去调用init函数! 
+            let flag = false;
+            new Pager({
+                // 分页插件的容器选择器
+                el: ".pagination",
+                // 根据响应数据设置分页数量 
+                count: data.total,
+                // 记录分页信息 : 根据options里面的分页信息显示的! 
+                index: options.params.current - 1,
+                // 切换页面是会调用callback回调函数的; 
+                callback(index) {
+                    // 分页器在设置分页下标的时候是从0开始的! 
+                    options.params.current = index + 1;
+                    // 我们更新了配置选项之后我们要去调用init函数!
+                    if (!flag) {
+                        flag = true
+                    } else {
+                        init();
+                    }
+                }
+            })
+        }
+        // 注意 02_根据list数据进行页面结构数据拼接
+        let goods_content = document.querySelector('.goods-content')
+        function renderGoods(list) {
+            console.log(list);
+            let html = list.map(item =>
+                `<div class="box" data-id = ${ item.goods_id }>
+                    <img src="${item.img_big_logo}"  alt="">
+                    <p>${item.title}</p>
+                    <div class="price-box">
+                        <i>¥</i>
+                        <em>${item.current_price}</em>
+                        <del>${item.price}</del>
+                        <span>${item.sale_type}</span>
+                    </div>
+                </div>`
+            ).join("")
+            // 把拼接好的结构放在dom结构之中
+            goods_content.innerHTML = html
+        }
+        // 分析 页面结构渲染页面事件:load
+        window.addEventListener("load", init)
+
+        // 注意 03_添加显示数据事件
+        let pagesize_select = document.querySelector('#pagesize-select')
+        function changePageSize() {
+            // 根据选择的选项value给pagesize赋值
+            options.params.pagesize = pagesize_select.value;
+            // 数据修改之后需要重新发起请求
+            init()
+        }
+        pagesize_select.addEventListener("change", changePageSize)
+        // 注意 05_搜索功能
+        let search = document.querySelector('#search')
+        let search_btn = document.getElementById('search-btn')
+        function handlerSearch() {
+            options.params.search = search.value
+            // 更改参数之后调用init即可
+            init()
+        }
+        search_btn.addEventListener('click', handlerSearch)
+        // 注意 06_折扣范围
+        let saletype_select = document.querySelector('#saletype-select');
+        function changeSaleType() {
+            options.params.saleType = saletype_select.value;
+            init()
+        }
+        saletype_select.addEventListener("change", changeSaleType)
+
+        // 注意 07_排序功能 
+        let sortType_select = document.getElementById('sortType-select')
+        function changeSortType() {
+            options.params.sortType = sortType_select.value;
+            init()
+        }
+        sortType_select.addEventListener('change',changeSortType)
+
+        // 注意 08_排序类别
+        let sortMethod_select = document.getElementById('sortMethod-select')
+        function changeSortMethod() {
+            options.params.sortMethod = sortMethod_select.value;
+            init()
+        }
+        sortMethod_select.addEventListener('change',changeSortMethod)
+
+        // 注意 09_分类
+        let category_select = document.querySelector('#category-select')
+        async function renderCategory() {
+            let { data } = await axios("http://localhost:8888/goods/category");
+            // 渲染页面
+            let html = data.list.map( item => 
+                `<option value=${ item }>${ item }</option>`
+            ).join("");
+            category_select.innerHTML = html
+        }
+        window.addEventListener('load',renderCategory)
+        // 切换分类
+        function changeCategory() {
+            options.params.category = category_select.value;
+            init()
+        }
+        category_select.addEventListener('change',changeCategory)
+
+        // 注意 10_跳转详情
+        // 分析 添加事件委托
+        function deleagationChangePage(e = event) {
+            // 获取事件源
+            let { target : dom } = e; 
+            if( dom === goods_content ){
+                return false;
+            }
+            // 找到当前dom对象的父级 box 元素; 
+            while( dom.className !== "box" ){
+                dom = dom.parentNode 
+            }
+            // 获取商品的id信息! 
+            let { id } = dom.dataset;
+            // url#哈希值 转转页面
+            location.href = "./详情.html#"+ id; 
+        }
+        goods_content.addEventListener('click',deleagationChangePage)
+    </script>
+</body>
+
+</html>

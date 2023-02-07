@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录</title>
+    <link rel="stylesheet" href="./css/suning-login.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_3714425_wp3ml2w1luc.css">
+    <script src="./libs/axios.js"></script>
+</head>
+
+<body>
+    <div class="register-container">
+        <div class="register-wrap">
+            <div class="register-content">
+                <div class="title">用户登录</div>
+                <div class="input-content">
+                    <div class="username">
+                        <i class="iconfont icon-yonghuming"></i>
+                        <!-- 用户名输入框 -->
+                        <input id="username" value="wuyanzu666" autocomplete="off" type="text" placeholder="请输入用户名">
+                    </div>
+                    <div class="password">
+                        <i class="iconfont icon-mima"></i>
+                        <!-- 密码输入框 -->
+                        <input id="password" value="123456" type="text" autocomplete="off" placeholder="请输入密码">
+                    </div>
+                </div>
+                <!-- 登录按钮 -->
+                <button id="login">登录</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        let login = document.getElementById("login");
+        let username = document.getElementById("username");
+        let password = document.getElementById("password");
+        async function handlerLogin() {
+            let options = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                data: {
+                    username: username.value,
+                    password: password.value,
+                }
+            }
+            let { data } = await axios("http://localhost:8888/users/login", options);
+            // 响应处理 : 
+            handlerLoginResponse(data)
+        }
+        function handlerLoginResponse(data) {
+            console.log(data);
+            let { code, message, token } = data;
+            if (code === 1) {
+                alert("恭喜注册成功,我们会在3秒钟之后跳转到登录页面");
+                // 存储用户的登录信息 token
+                localStorage.setItem("token", token)
+                setTimeout(function () {
+                    location.href = "./用户.html#"+ + data.user.id;
+                }, 3000)
+            } else {
+                alert(message)
+            }
+        }
+        login.addEventListener("click", handlerLogin)
+    </script>
+</body>
+
+</html>

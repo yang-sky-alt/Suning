@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户注册</title>
+    <link rel="stylesheet" href="./css/suning-login.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_3714425_wp3ml2w1luc.css">
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-wrap">
+            <div class="register-content">
+                <div class="title">用户注册</div>
+                <div class="input-content">
+                    <div class="username">
+                        <i class="iconfont icon-yonghuming"></i>
+                        <!-- 用户名输入框 -->
+                        <input id="username" value="wuyanzu666" autocomplete="off" type="text" placeholder="请输入用户名">
+                    </div>
+                    <div class="nickname">
+                        <i class="iconfont icon-nicheng"></i>
+                        <!-- 昵称输入框 -->
+                        <input id="nickname" value="yanzu" type="text" autocomplete="off" placeholder="请输入昵称">
+                    </div>
+                    <div class="password">
+                        <i class="iconfont icon-mima"></i>
+                        <!-- 密码输入框 -->
+                        <input id="password" value="123456" type="text" autocomplete="off" placeholder="请输入密码">
+                    </div>
+                    <div class="rpassword">
+                        <i class="iconfont icon-zaicishurumima"></i>
+                        <!-- 重新输入密码输入框 -->
+                        <input id="rpassword" value="123456" type="text" autocomplete="off" placeholder="请重新输入密码">
+                    </div>
+                </div>
+                <!-- 注册按钮 -->
+                <button id="register">注册</button>
+            </div>
+        </div>
+    </div>
+    <script src="./libs/axios.js"></script>
+    <script>
+        let register = document.getElementById("register");
+        let username = document.getElementById("username");
+        let nickname = document.getElementById("nickname");
+        let password = document.getElementById("password");
+        let rpassword = document.getElementById("rpassword");
+        // 分析 点击注册触发功能; 
+        async function handlerRegister() {
+            let options = {
+                method : 'post',
+                headers : {
+                    "Content-Type" : "application/x-www-form-urlencoded"
+                },
+                data : {
+                    username : username.value,
+                    password : password.value,
+                    nickname : nickname.value,
+                    rpassword : rpassword.value 
+                }
+            }
+            let { data } = await axios("http://localhost:8888/users/register" , options ); 
+            // 相应处理
+            handlerRegisterResponse(data)
+        }
+        function handlerRegisterResponse(data) {
+            let { code,message } = data
+            // 根据注册状态 : 给用户提示显示在页面上! 显示出来就是dom操作;
+            switch( code ){
+                // 表示注册失败! 
+                case 0 : 
+                    alert( message );
+                    break;
+                case 1 : 
+                    alert("恭喜注册成功,我们会在3秒钟之后跳转到登录页面");
+                    break;
+            }
+
+        }
+        register.addEventListener('click',handlerRegister)
+    </script>
+</body>
+</html>

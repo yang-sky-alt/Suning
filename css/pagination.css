@@ -1,0 +1,23 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.pagination-button:link,
+.pagination-button:visited,
+.pagination-button:hover,
+.pagination-button:active{
+  text-decoration: none;
+  color: #333;
+  cursor: pointer;
+}
+.pagination-button{
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: #ddd;
+    margin-left: 5px;
+}
+.pagination-button.active{
+  color: #fff;
+  background-color: #333;
+}

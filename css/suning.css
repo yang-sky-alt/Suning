@@ -1,0 +1,79 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+body{
+    background-color: #f2f2f2;
+}
+em , i {
+    font-style: normal;
+}
+.goods-container{
+    width: 1190px;
+    margin: 0 auto;
+}
+.goods-container>img{
+    width: 100%;
+}
+
+.goods-content{
+    display: flex;
+    flex-wrap: wrap;
+}
+.goods-container .box{
+    width: 230px;
+    height: 350px;
+    margin: 0 10px 10px 0;
+    background: #fff;
+    border-radius: 6px;
+}
+.goods-container .box:nth-of-type(5n){
+    margin-right: 0;
+}
+
+.goods-container .box>img{
+    width: 230px;
+    height: 230px;
+    margin: 0 0 10px;
+    border-radius: 6px 6px 0 0;
+}
+.goods-container .box>p{
+    width: 202px;
+    height: 40px;
+    margin: 0 0 8px 14px;
+    overflow: hidden;
+    color: #333;
+    font: 14px/20px 'Microsoft Yahei',tahoma,arial,'Hiragino Sans GB';
+    word-break: break-all;
+}
+
+.goods-container .price-box{
+    line-height: 28px;
+    color: #f30;
+    font-size: 20px;
+    font-weight: bold;
+    height: 28px;
+    margin-left: 14px;
+}
+/* 分页器居中样式 */
+.goods-container .pagination{
+    text-align: center;
+}
+.options-content{
+    padding: 10px 0px;
+}
+.filter{
+    color: #333;
+    cursor: pointer;
+}
+
+.filter span{
+    background-color: #ddd;
+    border: 2px solid #000;
+    padding: 5px 10px;
+}
+
+.filter span.active{
+    background-color: #f30;
+    color: #fff;
+}
